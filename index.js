@@ -25,7 +25,7 @@ app.post("/setpwd", (req, res) => {
   const { password } = req.body;
   // 입력된 비밀번호를 SHA-512로 해싱
   hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
-  storedPassword = hashedPassword;
+  var storedPassword = hashedPassword;
   if (hashedPassword === storedPassword) {
     res.json({ Match: true });
   } else {
