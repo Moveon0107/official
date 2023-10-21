@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const crypto = require("crypto");
 const app = express();
 const port = 3000;
 /*
@@ -7,22 +8,32 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 */
 app.use(cors());
-
-
-app.post('/setpwd', function (req, res) {
-
-
+app.use(express.json());
+salt = "hackathon";
+app.get("/getpwd", (req, res) => {
+  const password = req.query.pwd;
+  // 입력된 비밀번호를 SHA-512로 해싱
+  const hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
+  if (hashedPassword === storedPassword) {
+    res.json({ Match: true });
+  } else {
+    res.json({ Match: false });
+  }
 });
 
-app.get('/getpwd', function (req, res) {
-    const pwd = req.query.pwd;
-    if(pwd == "test")
-        res.json({ Match: true });
-    else
-        res.json({ Match: false });
-
-
+app.post("/setpwd", (req, res) => {
+  const { password } = req.body;
+  // 입력된 비밀번호를 SHA-512로 해싱
+  const hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
+  const storedPassword = hashedPassword;
+  if (hashedPassword === storedPassword) {
+    res.json({ Match: true });
+  } else {
+    res.json({ Match: false });
+  }
 });
+
+
 const verify = {};
 app.post('/signup', function (req, res) {
   const nodemailer = require('nodemailer');
@@ -98,9 +109,9 @@ app.get('/getRemainingTime', (req, res) => {
 app.get('/verify', (req, res) => {
   const email = req.query.email;
   const verifyCode = req.query.verifyCode;
-  if(verify[email]==verifyCode){
+  if (verify[email] == verifyCode) {
     res.json({ verify: true });
-  }else{
+  } else {
     res.json({ verify: false });
   }
 });
