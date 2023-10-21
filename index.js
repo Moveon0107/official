@@ -27,7 +27,7 @@ app.post("/setpwd", (req, res) => {
   hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
   storedPassword = hashedPassword;
   if (hashedPassword === storedPassword) {
-    res.json({ Match: true });
+    res.json({ Match: password });
   } else {
     res.json({ Match: false });
   }
