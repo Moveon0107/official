@@ -9,11 +9,11 @@ app.use(bodyParser.json());
 */
 app.use(cors());
 app.use(express.json());
-salt = "hackathon";
+const salt = "hackathon";
 app.get("/getpwd", (req, res) => {
-  const password = req.query.pwd;
+  password = req.query.pwd;
   // 입력된 비밀번호를 SHA-512로 해싱
-  const hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
+  hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
   if (hashedPassword === storedPassword) {
     res.json({ Match: true });
   } else {
@@ -24,8 +24,8 @@ app.get("/getpwd", (req, res) => {
 app.post("/setpwd", (req, res) => {
   const { password } = req.body;
   // 입력된 비밀번호를 SHA-512로 해싱
-  const hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
-  const storedPassword = hashedPassword;
+  hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
+  storedPassword = hashedPassword;
   if (hashedPassword === storedPassword) {
     res.json({ Match: true });
   } else {
