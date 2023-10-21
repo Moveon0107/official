@@ -17,7 +17,7 @@ app.get("/getpwd", (req, res) => {
   if (hashedPassword === storedPassword) {
     res.json({ Match: true });
   } else {
-    res.json({ Match: password });
+    res.json({ Match: hashedPassword+",,,,,"+storedPassword });
   }
 });
 
