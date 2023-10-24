@@ -60,19 +60,8 @@ app.post('/signup', function (req, res) {
   const mailOptions = {
     from: 'email.address.confirm1@gmail.com', // 발신자 이메일
     to: email, // 수신자 이메일
-    subject: 'ClanTalk - 이메일 인증',
-    html: `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Document</title>
-    </head>
-    <body>
-      안녕하세요! ${nickname}님,<br>아래 인증코드를 입력하여 회원가입을 완료하세요.<div style="display: flex; justify-content: center;"><span style="background-color: dodgerblue; color: #fff; padding: 20px; border-radius: 15px; letter-spacing: 5px; font-weight: bold; margin-top: 50px;">${verify[email]}</span></div>
-    </body>
-    </html>`
+    subject: '이메일 인증',
+    html: `안녕하세요! ${nickname}님,<br>아래 인증코드를 입력하여 회원가입을 완료하세요.<div style="display: flex; justify-content: center;"><span style="background-color: dodgerblue; color: #fff; padding: 20px; border-radius: 15px; letter-spacing: 5px; font-weight: bold; margin-top: 50px;">${verify[email]}</span></div>`
   };
   // 이메일 보내기
   transporter.sendMail(mailOptions, (error, info) => {
@@ -83,15 +72,6 @@ app.post('/signup', function (req, res) {
       console.log('이메일 발송 성공:', info.response);
       res.json({ success: true, message: '이메일 발송 성공' });
     }
-  });
-
-});
-
-const emailRemainingTimes = {}; // 이메일 주소와 쿨타임을 저장할 객체
-const timerInterval = {};
-app.get('/getRemainingTime', (req, res) => {
-  const email = req.query.email;
-  if (!emailRemainingTimes[email]) {
     emailRemainingTimes[email] = 5 * 60; // 이메일 주소에 대한 쿨타임 초기화
     timerInterval[email] = setInterval(function () {
       if (emailRemainingTimes[email] <= 0) {
@@ -102,10 +82,20 @@ app.get('/getRemainingTime', (req, res) => {
         emailRemainingTimes[email]--;
       }
     }, 1000); // 1초마다 갱신
-  }
+  });
 
-  res.json({ remainingTime: emailRemainingTimes[email] });
 });
+
+const emailRemainingTimes = {};
+const timerInterval = {};
+app.get('/getRemainingTime', (req, res) => {
+  const email = req.query.email;
+  res.json({ remainingTime: Number(emailRemainingTimes[email]) });
+});
+
+
+
+
 
 app.get('/verify', (req, res) => {
   const email = req.query.email;
