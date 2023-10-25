@@ -35,7 +35,7 @@ app.post("/setpwd", (req, res) => {
 });
 
 
-const verify = {};
+const timerInterval = {};
 app.post('/signup', function (req, res) {
   const nodemailer = require('nodemailer');
 
@@ -88,7 +88,6 @@ app.post('/signup', function (req, res) {
 });
 
 const emailRemainingTimes = {};
-const timerInterval = {};
 app.get('/getRemainingTime', (req, res) => {
   const email = req.query.email;
   res.json({ remainingTime: Number(emailRemainingTimes[email]) });
@@ -96,8 +95,7 @@ app.get('/getRemainingTime', (req, res) => {
 
 
 
-
-
+const verify = {};
 app.get('/verify', (req, res) => {
   const email = req.query.email;
   const verifyCode = req.query.verifyCode;
