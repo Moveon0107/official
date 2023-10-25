@@ -73,6 +73,7 @@ app.post('/signup', function (req, res) {
       res.json({ success: true, message: '이메일 발송 성공' });
     }
     emailRemainingTimes[email] = 5 * 60; // 이메일 주소에 대한 쿨타임 초기화
+    clearInterval(timerInterval[email]);
     timerInterval[email] = setInterval(function () {
       if (emailRemainingTimes[email] <= 0) {
         clearInterval(timerInterval[email]);
