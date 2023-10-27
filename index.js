@@ -13,24 +13,69 @@ app.use(express.json());
 
 
 const conn_str = 'mongodb+srv://Moveon0107:1246code@clantalk.f4vjw3q.mongodb.net/?retryWrites=true&w=majority';
-async function connectToMongoDB() {
-  try {
-    await mongoose.connect(conn_str, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('Connected to MongoDB');
-  } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
-  }
+try {
+  await mongoose.connect(conn_str, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+  console.log('Connected to MongoDB');
+} catch (error) {
+  console.error('Error connecting to MongoDB:', error);
 }
-connectToMongoDB();
+
+const userSchema = new mongoose.Schema({
+  email: { type: String, unique: true },
+  password: String,
+  nickname: { type: String, unique: true },
+  birthdate: Date,
+  gender: String,
+});
+
+const User = mongoose.model('User', userSchema);
+
+app.post("/userInfoUpdate", async (req, res) => {
+  const { email, password, nickname, birthdate, gender } = req.body;
+
+  // 중복 이메일 확인
+  const existingEmailUser = await User.findOne({ email });
+  const isEmailDuplicate = !!existingEmailUser;
+
+  // 중복 닉네임 확인
+  const existingNicknameUser = await User.findOne({ nickname });
+  const isNicknameDuplicate = !!existingNicknameUser;
+
+  if (isEmailDuplicate || isNicknameDuplicate) {
+    const response = {};
+    if (isEmailDuplicate) {
+      response.email = true;
+      res.status(400).json({ message: '이미 사용 중인 이메일입니다.' });
+    }
+    if (isNicknameDuplicate) {
+      response.nickname = true;
+      res.status(400).json({ message: '이미 사용 중인 닉네임입니다.' });
+    }
+    return res.status(400).json(response);
+  }
+
+
+  // 중복되지 않으면 회원가입 처리
+  const newUser = new User({ email, password, nickname, birthdate, gender });
+  await newUser.save()
+    .then(result => {
+      console.log('새로운 사용자가 데이터베이스에 저장되었습니다.');
+    })
+    .catch(error => {
+      console.error('사용자 저장 중 오류 발생: ', error);
+      res.status(400).json({ message: '예상치 못한 오류로 회원가입에 실패했습니다.' });
+    });;
+  res.json({ message: '회원가입이 완료되었습니다.' });
+});
 
 const salt = "hackathon";
 app.get("/getpwd", (req, res) => {
   password = req.query.pwd;
   // 입력된 비밀번호를 SHA-512로 해싱
-  hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
+  hashedPassword = crypto.createHash("sha512").update(salt + password).digest("hex");
   if (hashedPassword === storedPassword) {
     res.json({ Match: true });
   } else {
@@ -42,7 +87,7 @@ app.post("/setpwd", (req, res) => {
   const { password } = req.body;
 
   // 입력된 비밀번호를 SHA-512로 해싱
-  hashedPassword = crypto.createHash("sha512").update(salt+password).digest("hex");
+  hashedPassword = crypto.createHash("sha512").update(salt + password).digest("hex");
   storedPassword = hashedPassword;
   if (hashedPassword === storedPassword) {
     res.json({ Match: true });
