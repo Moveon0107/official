@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const crypto = require("crypto");
 const app = express();
+const mongoose = require('mongoose');
 const port = 3000;
 /*
 const bodyParser = require('body-parser');
@@ -9,6 +10,23 @@ app.use(bodyParser.json());
 */
 app.use(cors());
 app.use(express.json());
+
+
+const conn_str = 'mongodb+srv://Moveon0107:1246code@cluster0.cwn2zea.mongodb.net/?retryWrites=true&w=majority';
+
+mongoose.connect(
+  conn_str, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  }, (err) => {
+    if(err){
+      console.log("error in connection");
+    }else{
+      console.log("mongodb is connected");
+    }
+  }
+);
+
 const salt = "hackathon";
 app.get("/getpwd", (req, res) => {
   password = req.query.pwd;
