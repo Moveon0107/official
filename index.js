@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 
-const conn_str = 'mongodb+srv://Moveon0107:1246code@cluster0.cwn2zea.mongodb.net/?retryWrites=true&w=majority';
+const conn_str = 'mongodb+srv://Moveon0107:1246code@clantalk.f4vjw3q.mongodb.net/?retryWrites=true&w=majority';
 async function connectToMongoDB() {
   try {
     await mongoose.connect(conn_str, {
