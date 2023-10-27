@@ -13,19 +13,18 @@ app.use(express.json());
 
 
 const conn_str = 'mongodb+srv://Moveon0107:1246code@cluster0.cwn2zea.mongodb.net/?retryWrites=true&w=majority';
-
-mongoose.connect(
-  conn_str, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  }, (err) => {
-    if(err){
-      console.log("error in connection");
-    }else{
-      console.log("mongodb is connected");
-    }
+async function connectToMongoDB() {
+  try {
+    await mongoose.connect(conn_str, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
   }
-);
+}
+connectToMongoDB();
 
 const salt = "hackathon";
 app.get("/getpwd", (req, res) => {
