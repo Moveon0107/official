@@ -3,15 +3,34 @@ const cors = require('cors');
 const crypto = require("crypto");
 const app = express();
 const mongoose = require('mongoose');
-const port = 3000;
-/*
 const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-*/
+const fs = require('fs');
 app.use(cors());
 app.use(express.json());
+const port = 3000;
 
+app.use(bodyParser.raw({ type: 'image/jpeg', limit: '10mb' }));
 
+app.post('/cam', (req, res) => {
+  // POST 요청에서 프레임 데이터를 받아서 파일로 저장
+  if (req.body && req.body.length > 0) {
+    const frameData = req.body;
+    fs.writeFile('./교육청해커톤/captured_frame.jpg', frameData, 'binary', (err) => {
+      if (err) {
+        console.error('Error saving frame:', err);
+        res.status(500).send('Internal Server Error');
+      } else {
+        // 성공적으로 프레임을 저장한 경우
+        console.log('Frame received and saved.');
+        res.status(200).send('Frame received and saved successfully.');
+      }
+    });
+  } else {
+    res.status(400).send('Bad Request: No frame data received.');
+  }
+});
+
+//몽고DB
 const conn_str = 'mongodb+srv://Moveon0107:1246code@clantalk.f4vjw3q.mongodb.net/?retryWrites=true&w=majority';
 try {
   await mongoose.connect(conn_str, {
@@ -71,6 +90,8 @@ app.post("/userInfoUpdate", async (req, res) => {
   res.json({ message: '회원가입이 완료되었습니다.' });
 });
 
+
+//피지컬 컴퓨팅 해커톤
 const salt = "hackathon";
 app.get("/getpwd", (req, res) => {
   password = req.query.pwd;
@@ -96,7 +117,7 @@ app.post("/setpwd", (req, res) => {
   }
 });
 
-
+//프로그래밍 수행평가
 const timerInterval = {};
 app.post('/signup', function (req, res) {
   const nodemailer = require('nodemailer');
@@ -155,8 +176,6 @@ app.get('/getRemainingTime', (req, res) => {
   res.json({ remainingTime: Number(emailRemainingTimes[email]) });
 });
 
-
-
 const verify = {};
 app.get('/verify', (req, res) => {
   const email = req.query.email;
@@ -167,7 +186,6 @@ app.get('/verify', (req, res) => {
     res.json({ verify: false });
   }
 });
-
 
 app.listen(port, function () { console.log("API and Server is Ready!") });
 
