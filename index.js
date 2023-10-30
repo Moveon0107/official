@@ -33,10 +33,7 @@ app.post('/cam', (req, res) => {
 //몽고DB
 const conn_str = 'mongodb+srv://Moveon0107:1246code@clantalk.f4vjw3q.mongodb.net/?retryWrites=true&w=majority';
 try {
-  await mongoose.connect(conn_str, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  mongoose.connect(conn_str, { useNewUrlParser: true, useUnifiedTopology: true });
   console.log('Connected to MongoDB');
 } catch (error) {
   console.error('Error connecting to MongoDB:', error);
@@ -49,8 +46,30 @@ const userSchema = new mongoose.Schema({
   birthdate: Date,
   gender: String,
 });
+const userSchema = new mongoose.Schema({
+  email: {
+  	type : String,
+    required: true // required는 무조건 요청에 포함 되어야 함을 의미합니다.
+  },
+  password: {
+    type : String,
+    required: true
+   },
+   nickname: {
+  	type : String,
+    required: true
+  },
+  birthdate: {
+  	type : Date,
+    required: true
+  },
+  gender: {
+  	type : String,
+    required: true
+  },
+});
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema, 'User');
 
 app.post("/userInfoUpdate", async (req, res) => {
   const { email, password, nickname, birthdate, gender } = req.body;
@@ -78,15 +97,21 @@ app.post("/userInfoUpdate", async (req, res) => {
 
 
   // 중복되지 않으면 회원가입 처리
-  const newUser = new User({ email, password, nickname, birthdate, gender });
-  await newUser.save()
-    .then(result => {
-      console.log('새로운 사용자가 데이터베이스에 저장되었습니다.');
-    })
-    .catch(error => {
-      console.error('사용자 저장 중 오류 발생: ', error);
-      res.status(400).json({ message: '예상치 못한 오류로 회원가입에 실패했습니다.' });
-    });;
+  const newUser = new User({
+    email: email,
+    password: password,
+    nickname: nickname,
+    birthdate: birthdate,
+    gender: gender
+  });
+  newUser.save()
+  .then(()=>{
+    console.log("저장 성공!")
+  })
+  .catch((err)=>{
+    console.error('사용자 저장 중 오류 발생: ', error);
+    res.status(400).json({ message: '예상치 못한 오류로 회원가입에 실패했습니다.' });
+  })
   res.json({ message: '회원가입이 완료되었습니다.' });
 });
 
