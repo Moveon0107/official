@@ -59,6 +59,7 @@ app.post("/setpwd", (req, res) => {
 //프로그래밍 수행평가
 app.post('/pwdHashing', (req, res) => {
   const password = req.body.password;
+  console.log("pwdHashing 요청받음");
   res.status(200).send(crypto.createHash("sha512").update("programming" + password).digest("hex"));
 });
 
