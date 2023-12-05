@@ -12,7 +12,6 @@ const port = 3000;
 app.use(bodyParser.raw({ type: 'image/jpeg', limit: '10mb' }));
 
 //2023 대현고 비상제 축제
-const verify = {};
 app.post('/EmailSend', function (req, res) {
   const nodemailer = require('nodemailer');
 
@@ -164,6 +163,7 @@ app.get('/getRemainingTime', (req, res) => {
   res.json({ remainingTime: Number(emailRemainingTimes[email]) });
 });
 
+const verify = {};
 app.get('/verify', (req, res) => {
   const email = req.query.email;
   const verifyCode = req.query.verifyCode;
