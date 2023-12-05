@@ -170,6 +170,8 @@ app.get('/verify', (req, res) => {
   if (verify[email] == verifyCode) {
     res.json({ verify: true });
   } else {
+    console.log(verifyCode);
+    console.log(verify[email]);
     res.json({ verify: false });
   }
 });
